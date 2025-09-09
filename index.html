@@ -116,13 +116,71 @@
       z-index: 1;
     }
 
-    .ticket-part.small { 
-      flex: 0.7; 
+    /* === Updated small ticket part to center Booking ID, Name, Contact row and QR === */
+    .ticket-part.small {
+      flex: 0.7;
+      display: flex;
+      flex-direction: column;    /* stack top -> bottom */
+      align-items: center;       /* center horizontally */
+      justify-content: flex-start;
+      padding: 34px 12px;        /* keep room for header */
+      gap: 8px;
+    }
+
+    .passenger-info {
+      width: 100%;
+      max-width: 220px;          /* control width so center looks neat */
+      display: flex;
+      flex-direction: column;
+      align-items: center;       /* center text and qr */
+      gap: 6px;
+      text-align: center;
+      font-size: 13px;
+      margin: 0 auto;
+    }
+
+    .booking-id { font-size: 24px; font-weight: 800; letter-spacing: 0.6px; }
+    .booking-label { font-size: 12px; color: #666; margin-bottom: 4px; }
+
+    .passenger-name { font-size: 20px; font-weight: 700; margin-top: 4px; }
+
+    /* phone and gender side-by-side but centered */
+    .contact-row {
+      display: flex;
+      gap: 22px;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      margin-top: 6px;
+    }
+    .contact-row .info-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 80px;
+    }
+    .contact-row .info-label { font-size: 11px; color: #444; margin-bottom: 4px; }
+    .contact-row .info-value { font-weight:700; font-size:13px; }
+
+    /* QR container: centered, below everything */
+    .qr-container {
+      width: 120px;
+      height: 120px;
       display: flex;
       align-items: center;
-      gap: 16px;
-      justify-content: flex-start;
-      padding-left: 12px;
+      justify-content: center;
+      margin-top: 12px;
+      background: white;
+      border-radius: 8px;
+      padding: 6px;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+    }
+
+    .qr-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
     }
 
     .ticket-part:not(:last-child) {
@@ -164,30 +222,6 @@
     .row { display: flex; justify-content: space-between; margin-top: 6px; gap: 12px; }
     .row .info-block { flex: 1; }
 
-    /* QR container */
-    .qr-container {
-      width: 100px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .qr-img {
-      width: 90px;
-      height: 90px;
-      object-fit: contain;
-    }
-
-    .passenger-info {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      text-align: left;
-      font-size: 13px;
-    }
-    .passenger-info .info-label { font-size: 11px; color: #444; }
-    .passenger-info .info-value { font-size: 13px; font-weight: 700; }
-
     #downloadBtn { display: none; margin: 15px auto; }
   </style>
 </head>
@@ -202,11 +236,11 @@
       <div class="form">
         <input type="text" id="bookingId" placeholder="Enter Booking ID">
         <button class="button" onclick="generateTicket()">Generate Ticket</button>
+        <button class="button" id="downloadAllBtn" style="display:none;" onclick="downloadTicket()">Download Ticket</button>
       </div>
     </div>
 
     <div id="ticketContainer"></div>
-    <button id="downloadBtn" class="button" onclick="downloadTicket()">Download Ticket</button>
   </div>
   
   <script src="passengers.js"></script>
@@ -331,69 +365,66 @@
           </div>
 
           <div class="ticket-part small">
-  <div class="passenger-info" style="flex:1; text-align:center;">
-    <div class="info-block">
-      <span class="info-label" style="font-size:13px;">Booking ID</span>
-      <div class="info-value" style="font-size:20px; font-weight:700;">${bookingId}</div>
-    </div>
-    <div class="info-block">
-      <span class="info-label" style="font-size:13px;">Name</span>
-      <div class="info-value" style="font-size:18px; font-weight:700;">${p.name}</div>
-    </div>
-    <div class="row" style="justify-content:center; margin:8px 0;">
-      <div class="info-block" style="flex:unset; margin-right:20px;">
-        <span class="info-label">Phone</span>
-        <span class="info-value">${p.phone}</span>
-      </div>
-      <div class="info-block" style="flex:unset;">
-        <span class="info-label">Gender</span>
-        <span class="info-value">${p.gender}</span>
-      </div>
-    </div>
-    <div class="qr-container" style="margin-top:10px; justify-content:center;">
-      <img src="${qrId}_QR.png" class="qr-img" alt="QR for ${qrId}">
-    </div>
-  </div>
-</div>
+            <div class="passenger-info">
+              <div class="booking-label">Booking ID</div>
+              <div class="booking-id">${bookingId}</div>
 
+              <div class="passenger-name">${p.name}</div>
 
-          <div class="ticket-part">
-            <div class="info-block"><span class="info-label">Train</span><span class="info-value">${p.return.train}</span></div>
-            <div class="route">
-              <div class="station-name">${p.return.from}</div>
-              <img src="train-right.png" class="train-img" alt="Train">
-              <div class="station-name">${p.return.to}</div>
-            </div>
-            <div class="row">
-              <div class="info-block"><span class="info-label">Date</span><span class="info-value">${p.return.date}</span></div>
-              <div class="info-block"><span class="info-label">Time</span><span class="info-value">${p.return.time}</span></div>
-            </div>
-            <div class="row">
-              <div class="info-block"><span class="info-label">Coach</span><span class="info-value">${p.return.coach}</span></div>
-              <div class="info-block"><span class="info-label">Seat</span><span class="info-value">${p.return.seat}</span></div>
+              <div class="contact-row">
+                <div class="info-block">
+                  <div class="info-label">Phone</div>
+                  <div class="info-value">${p.phone || '—'}</div>
+                </div>
+                <div class="info-block">
+                  <div class="info-label">Gender</div>
+                  <div class="info-value">${p.gender || '—'}</div>
+                </div>
+              </div>
+
+              <div class="qr-container" aria-hidden="true">
+                <img src="${qrId}_QR.png" class="qr-img" alt="QR for ${qrId}">
+              </div>
             </div>
           </div>
 
           <div class="ticket-part">
-            <div class="info-block"><span class="info-label">Train</span><span class="info-value">${p.onward.train}</span></div>
+            <div class="info-block"><span class="info-label">Train</span><span class="info-value">${p.return?.train || ''}</span></div>
             <div class="route">
-              <div class="station-name">${p.onward.from}</div>
+              <div class="station-name">${p.return?.from || ''}</div>
               <img src="train-right.png" class="train-img" alt="Train">
-              <div class="station-name">${p.onward.to}</div>
+              <div class="station-name">${p.return?.to || ''}</div>
             </div>
             <div class="row">
-              <div class="info-block"><span class="info-label">Date</span><span class="info-value">${p.onward.date}</span></div>
-              <div class="info-block"><span class="info-label">Time</span><span class="info-value">${p.onward.time}</span></div>
+              <div class="info-block"><span class="info-label">Date</span><span class="info-value">${p.return?.date || ''}</span></div>
+              <div class="info-block"><span class="info-label">Time</span><span class="info-value">${p.return?.time || ''}</span></div>
             </div>
             <div class="row">
-              <div class="info-block"><span class="info-label">Coach</span><span class="info-value">${p.onward.coach}</span></div>
-              <div class="info-block"><span class="info-label">Seat</span><span class="info-value">${p.onward.seat}</span></div>
+              <div class="info-block"><span class="info-label">Coach</span><span class="info-value">${p.return?.coach || ''}</span></div>
+              <div class="info-block"><span class="info-label">Seat</span><span class="info-value">${p.return?.seat || ''}</span></div>
+            </div>
+          </div>
+
+          <div class="ticket-part">
+            <div class="info-block"><span class="info-label">Train</span><span class="info-value">${p.onward?.train || ''}</span></div>
+            <div class="route">
+              <div class="station-name">${p.onward?.from || ''}</div>
+              <img src="train-right.png" class="train-img" alt="Train">
+              <div class="station-name">${p.onward?.to || ''}</div>
+            </div>
+            <div class="row">
+              <div class="info-block"><span class="info-label">Date</span><span class="info-value">${p.onward?.date || ''}</span></div>
+              <div class="info-block"><span class="info-label">Time</span><span class="info-value">${p.onward?.time || ''}</span></div>
+            </div>
+            <div class="row">
+              <div class="info-block"><span class="info-label">Coach</span><span class="info-value">${p.onward?.coach || ''}</span></div>
+              <div class="info-block"><span class="info-label">Seat</span><span class="info-value">${p.onward?.seat || ''}</span></div>
             </div>
           </div>
         </div>
       `;
 
-      document.getElementById("downloadBtn").style.display = "block";
+      document.getElementById("downloadAllBtn").style.display = "inline-block";
     }
 
     function downloadTicket() {
