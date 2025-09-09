@@ -1,4 +1,4 @@
-h<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -166,18 +166,20 @@ h<!DOCTYPE html>
 
     /* Barcode */
     .barcode-container {
-      width: 50px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+  width: 40px;              /* narrow reserved space */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-    .barcode-img {
-      image-rendering: pixelated;
-      image-rendering: crisp-edges;
-      width: 100px;
-      height: auto;
-    }
+.barcode-img {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  width: auto;              /* no forced width */
+  max-height: 100px;        /* cap the barcode height */
+  max-width: 40px;          /* prevent overlap into passenger info */
+}
+
 
     .passenger-info {
       display: flex;
