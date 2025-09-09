@@ -26,7 +26,11 @@
       color: var(--text);
     }
 
-    .container { width: 100%; max-width: 1100px; margin: 0 auto; }
+    .container {
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
 
     h1.main-title {
       text-align: center;
@@ -96,12 +100,7 @@
       z-index: 1;
     }
 
-    .ticket-header-part {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
+    .ticket-header-part { display: flex; align-items: center; justify-content: center; }
     .ticket-header-part:first-child { flex: 0 0 25%; }
     .ticket-header-part:nth-child(2),
     .ticket-header-part:nth-child(3) { flex: 0 0 37.5%; }
@@ -126,7 +125,9 @@
       padding-left: 12px;
     }
 
-    .ticket-part:not(:last-child) { border-right: 2px dashed var(--perforation); }
+    .ticket-part:not(:last-child) {
+      border-right: 2px dashed var(--perforation);
+    }
 
     .ticket::after {
       content: "";
@@ -159,41 +160,34 @@
     .info-block { margin: 6px 0; }
     .info-label { font-size: 12px; font-weight: 600; color: #555; display: block; }
     .info-value { font-size: 14px; font-weight: 700; }
+
     .row { display: flex; justify-content: space-between; margin-top: 6px; gap: 12px; }
     .row .info-block { flex: 1; }
 
-    /* Barcode container */
+    /* Barcode */
     .barcode-container {
-      width: 60px;
+      width: 70px;
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
     .barcode-img {
-  image-rendering: pixelated;
-  image-rendering: crisp-edges;
-  width: 120px;  /* adjust */
-  height: auto;
-}
-
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      width: 120px;
+      height: auto;
+    }
 
     .passenger-info {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  text-align: right;   /* ✅ align text to the right */
-  font-size: 13px;
-  margin-left: auto;   /* ✅ push text away from barcode */
-}
-.passenger-info .info-label { 
-  font-size: 11px; 
-  color: #444; 
-}
-.passenger-info .info-value { 
-  font-size: 13px; 
-  font-weight: 700; 
-}
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      text-align: left;
+      font-size: 13px;
+    }
+    .passenger-info .info-label { font-size: 11px; color: #444; }
+    .passenger-info .info-value { font-size: 13px; font-weight: 700; }
 
     #downloadBtn { display: none; margin: 15px auto; }
   </style>
@@ -216,18 +210,13 @@
     <button id="downloadBtn" class="button" onclick="downloadTicket()">Download Ticket</button>
   </div>
   
-  <!-- Load passenger dataset -->
   <script src="passengers.js"></script>
-
   <script>
     function generateTicket() {
       const bookingId = document.getElementById('bookingId').value.trim();
       const p = passengers[bookingId];
 
-      if (!p) { 
-        alert("No booking found for this ID!"); 
-        return; 
-      }
+      if (!p) { alert("No booking found for this ID!"); return; }
 
       document.getElementById("ticketContainer").innerHTML = `
         <div class="ticket" id="ticket">
@@ -239,7 +228,7 @@
 
           <div class="ticket-part small">
             <div class="barcode-container">
-              <img src="B001_barcode.png" alt="Barcode" class="barcode-img">
+              <img src="${bookingId}_vertical.png" class="barcode-img" alt="Barcode for ${bookingId}">
             </div>
             <div class="passenger-info">
               <div class="info-block"><span class="info-label">Booking ID</span><span class="info-value">${bookingId}</span></div>
