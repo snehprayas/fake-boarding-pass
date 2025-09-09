@@ -1,2452 +1,445 @@
-H<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Sneh Prayas Boarding Pass Generator</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.0/jszip.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-<style>
-:root {
-  --pink-100: #ffe6f0;
-  --accent: #d63384;
-  --accent-2: #ff6699;
-  --perforation: #eaa1c3;
-  --text: #000;
-}
-body {font-family:'Poppins',sans-serif;background:var(--pink-100);margin:0;padding:20px;display:flex;flex-direction:column;align-items:center;color:var(--text);}
-.container{width:100%;max-width:1200px;}
-h1.main-title{color:var(--accent);text-align:center;margin:0 0 20px;font-size:28px;font-weight:700;}
-.gateway{background:#fff;border-radius:12px;padding:14px 16px;box-shadow:0 6px 18px rgba(0,0,0,0.06);margin-bottom:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center;}
-.gateway input{padding:10px 12px;border:2px solid #f7c7da;border-radius:8px;width:260px;}
-.button{padding:10px 16px;border-radius:10px;background:linear-gradient(135deg,var(--accent-2),var(--accent));color:#fff;border:none;cursor:pointer;font-weight:700;}
-.ticket{width:880px;max-width:95vw;border-radius:16px;overflow:hidden;background:var(--pink-100);box-shadow:0 12px 30px rgba(0,0,0,0.12);margin:18px auto;display:flex;position:relative;}
-.ticket-header-global{position:absolute;left:0;right:0;top:0;height:56px;background:var(--accent);color:#fff;display:flex;align-items:center;font-weight:700;font-size:16px;z-index:2;}
-.ticket-header-part{flex:1;display:flex;align-items:center;justify-content:center;padding:0 8px;}
-.ticket-part{flex:1;padding:86px 18px 18px;text-align:center;position:relative;min-width:0;}
-.ticket-part.small{flex:0.9;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:72px;gap:8px;}
-.info-label{display:block;font-size:12px;color:#555;font-weight:600;}
-.info-value{font-weight:700;font-size:14px;color:#000;}
-.top-booking{margin-top:-56px;padding-top:12px;width:100%;text-align:center;}
-.booking-id{font-size:22px;font-weight:800;color:var(--accent);padding:6px 12px;background:rgba(255,255,255,0.9);border-radius:8px;display:inline-block;box-shadow:0 4px 10px rgba(0,0,0,0.06);}
-.passenger-name{font-size:20px;font-weight:800;margin-top:6px;}
-.two-col{display:flex;gap:12px;justify-content:center;margin-top:8px;}
-.two-col .col{min-width:120px;}
-.qr-wrapper{margin-top:12px;display:flex;align-items:center;justify-content:center;}
-.qr-img{width:120px;height:120px;object-fit:contain;border-radius:6px;background:white;padding:6px;box-shadow:0 4px 14px rgba(0,0,0,0.06);}
-.small-meta{font-size:12px;color:#444;margin-top:6px;}
-.route{display:flex;gap:12px;align-items:center;justify-content:center;margin:12px 0;}
-.station-name{flex:1;font-weight:800;font-size:18px;}
-.train-img{width:60px;}
-.ticket-part:not(:last-child){border-right:2px dashed var(--perforation);}
-#hiddenRenderContainer{position:fixed;left:-9999px;top:-9999px;visibility:hidden;}
-.progress{margin-top:12px;background:#fff;padding:10px;border-radius:8px;box-shadow:0 6px 16px rgba(0,0,0,0.06);}
-.progress-bar{height:12px;background:#eee;border-radius:8px;overflow:hidden;}
-.progress-bar>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));}
-.status-text{margin-top:8px;font-size:13px;color:#333;}
-</style>
+  <meta charset="UTF-8">
+  <title>Sneh Prayas Boarding Pass</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <style>
+    :root {
+      --pink-100: #ffe6f0;
+      --accent: #d63384;
+      --accent-2: #ff6699;
+      --perforation: #eaa1c3;
+      --text: #000;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--pink-100);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 24px;
+      color: var(--text);
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    h1.main-title {
+      text-align: center;
+      color: var(--accent);
+      font-size: 32px;
+      font-weight: 700;
+      margin: 8px 0 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+    }
+
+    .logo-inline { height: 60px; width: auto; }
+
+    .gateway {
+      background: #ffffff;
+      border-radius: 14px;
+      padding: 18px 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .form { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+
+    .gateway input {
+      padding: 10px 12px;
+      border: 2px solid #f7c7da;
+      border-radius: 10px;
+      font-size: 14px;
+      width: 230px;
+      outline: none;
+    }
+
+    .button {
+      padding: 10px 18px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent-2), var(--accent));
+      color: #fff;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+    }
+
+    /* Ticket */
+    .ticket {
+      display: flex;
+      position: relative;
+      width: 80%;
+      max-width: 880px;
+      margin: 22px auto;
+      background: var(--pink-100);
+      border-radius: 18px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+      overflow: hidden;
+    }
+
+    .ticket-header-global {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 42px;
+      background: var(--accent);
+      display: flex;
+      font-weight: 700;
+      font-size: 16px;
+      color: #fff;
+      z-index: 1;
+    }
+
+    .ticket-header-part { display: flex; align-items: center; justify-content: center; }
+    .ticket-header-part:first-child { flex: 0 0 25%; }
+    .ticket-header-part:nth-child(2),
+    .ticket-header-part:nth-child(3) { flex: 0 0 37.5%; }
+
+    .ticket-part {
+      flex: 1;
+      padding: 58px 18px 18px;
+      font-size: 14px;
+      position: relative;
+      overflow: hidden;
+      color: black;
+      text-align: center;
+      z-index: 1;
+    }
+
+    /* Left small part with proper alignment */
+    .ticket-part.small {
+      flex: 0.7;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 34px 12px;
+      gap: 10px;
+    }
+
+    .passenger-info {
+      width: 100%;
+      max-width: 220px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      text-align: center;
+    }
+
+    .booking-label { font-size: 14px; color: #444; font-weight: 600; }
+    .booking-id { font-size: 26px; font-weight: 800; }
+    .passenger-name-label { font-size: 14px; color:#444; font-weight:600; margin-top:6px; }
+    .passenger-name { font-size: 20px; font-weight: 700; }
+
+    .contact-row {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      width: 100%;
+      margin-top: 6px;
+    }
+
+    .contact-row .info-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 80px;
+    }
+    .contact-row .info-label { font-size: 12px; color: #444; margin-bottom: 4px; font-weight:600; }
+    .contact-row .info-value { font-weight:700; font-size:14px; }
+
+    .qr-container {
+      width: 110px;
+      height: 110px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 14px;
+    }
+
+    .qr-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    .ticket-part:not(:last-child) {
+      border-right: 2px dashed var(--perforation);
+    }
+
+    .ticket::after {
+      content: "";
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 14px;
+      background: repeating-linear-gradient(-45deg, var(--accent) 0 12px, transparent 12px 24px);
+      z-index: 1;
+    }
+
+    .ticket-part::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 60%;
+      height: 60%;
+      background: url('SNEH_PRAYAS_LOGO.png') no-repeat center;
+      background-size: contain;
+      opacity: 0.08;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .route { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 12px 0; }
+    .station-name { flex: 1; text-align: center; font-size: 22px; font-weight: 700; color: black; }
+    .train-img { width: 70px; height: auto; flex-shrink: 0; }
+
+    .info-block { margin: 6px 0; }
+    .info-label { font-size: 12px; font-weight: 600; color: #555; display: block; }
+    .info-value { font-size: 14px; font-weight: 700; }
+
+    .row { display: flex; justify-content: space-between; margin-top: 6px; gap: 12px; }
+    .row .info-block { flex: 1; }
+
+    #downloadBtn, #downloadAllBtn { display: none; margin: 15px auto; }
+  </style>
 </head>
 <body>
-<div class="container">
-<h1 class="main-title">SNEH PRAYAS — BOARDING PASS GENERATOR</h1>
-<div class="gateway">
-<input id="bookingId" placeholder="Enter Booking ID (e.g. AST001B03R038)">
-<button class="button" onclick="generateTicket()">Generate Ticket</button>
-<button class="button" onclick="downloadAllTickets()">Download ALL Tickets</button>
-</div>
-<div id="ticketContainer"></div>
-<div id="hiddenRenderContainer"></div>
-<div id="progressArea" class="progress" style="display:none;">
-<div class="progress-bar"><i id="progressFill"></i></div>
-<div class="status-text" id="progressText">Preparing...</div>
-</div>
-</div>
+  <div class="container">
+    <h1 class="main-title">
+      <img src="SNEH_PRAYAS_LOGO.png" alt="Sneh Prayas Logo" class="logo-inline">
+      SNEH PRAYAS — BOARDING PASS
+    </h1>
 
-<script>
-// Passengers data (for brevity, add your full data here)
-const passengers = {
-  "AST001B03R038": {
-    "name": "Anita Jain",
-    "phone": "9830949980",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B6",
-      "seat": "2"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B10",
-      "seat": "2"
-    }
-  },
-  "AST002B03R038": {
-    "name": "Anjana Jain",
-    "phone": "9903148627",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B6",
-      "seat": "3"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B10",
-      "seat": "3"
-    }
-  },
-  "AST003B03R038": {
-    "name": "Manju Jain",
-    "phone": "6289427810",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B6",
-      "seat": "5"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B10",
-      "seat": "5"
-    }
-  },
-  "AST004B03R037": {
-    "name": "Neeru Jain",
-    "phone": "9331035648",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B6",
-      "seat": "6"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B10",
-      "seat": "6"
-    }
-  },
-  "AST005B08R078": {
-    "name": "Binod Kr Jain",
-    "phone": "9163007886",
-    "gender": "MALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B4",
-      "seat": "1"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B10",
-      "seat": "23"
-    }
-  },
-  "AST006B08R078": {
-    "name": "Vineeta Jain",
-    "phone": "9874062685",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B4",
-      "seat": "4"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B10",
-      "seat": "33"
-    }
-  },
-  "AST007B08R078": {
-    "name": "Vaibhav Jain",
-    "phone": "8697620674",
-    "gender": "MALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B4",
-      "seat": "2"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B10",
-      "seat": "40"
-    }
-  },
-  "AST008B13R051": {
-    "name": "Sunil Baj ",
-    "phone": "9830120118",
-    "gender": "MALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B8",
-      "seat": "11"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B3",
-      "seat": "5"
-    }
-  },
-  "AST009B13R053": {
-    "name": "Kusum Baj ",
-    "phone": "9331257021",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B8",
-      "seat": "13"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B3",
-      "seat": "8"
-    }
-  },
-  "AST010B08R080": {
-    "name": "Ramesh Ji Gangwal ",
-    "phone": "6290529158",
-    "gender": "MALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B4",
-      "seat": "65"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B10",
-      "seat": "25"
-    }
-  },
-  "AST011B08R081": {
-    "name": "Babita Gangwal ",
-    "phone": "9836345122",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B4",
-      "seat": "68"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B10",
-      "seat": "46"
-    }
-  },
-  "AST012B12R066": {
-    "name": "Dakha Devi Patni",
-    "phone": "9836647326",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B2",
-      "seat": "1"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B6",
-      "seat": "60"
-    }
-  },
-  "AST013B05R114": {
-    "name": "Rinkoo Gangwal ",
-    "phone": "9339053094",
-    "gender": "MALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B5",
-      "seat": "10"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B8",
-      "seat": "3"
-    }
-  },
-  "AST014B05R111": {
-    "name": "Minu Gangwal",
-    "phone": "9339053094",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B5",
-      "seat": "9"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B8",
-      "seat": "9"
-    }
-  },
-  "AST015B12R066": {
-    "name": "Smita Patni",
-    "phone": "9836376315",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B2",
-      "seat": "2"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B6",
-      "seat": "64"
-    }
-  },
-  "AST016B17R026": {
-    "name": "Santra Devi Jain",
-    "phone": "7872408048",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B1",
-      "seat": "44"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B6",
-      "seat": "12"
-    }
-  },
-  "AST017B08R080": {
-    "name": "Mahendra pal sethi",
-    "phone": "9883106098",
-    "gender": "MALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B4",
-      "seat": "20"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B10",
-      "seat": "31"
-    }
-  },
-  "AST018B08R081": {
-    "name": "Meena Devi Sethi",
-    "phone": "8337032922",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B4",
-      "seat": "17"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B10",
-      "seat": "48"
-    }
-  },
-  "AST019B10R094": {
-    "name": "Suman Sogani ",
-    "phone": "7595857788",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B7",
-      "seat": "1"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B12",
-      "seat": "1"
-    }
-  },
-  "AST020B12R070": {
-    "name": "Minu Barjatya ",
-    "phone": "9903710601",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B2",
-      "seat": "3"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B7",
-      "seat": "56"
-    }
-  },
-  "AST021B12R067": {
-    "name": "Prem Chand Jain",
-    "phone": "7980611041",
-    "gender": "MALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B2",
-      "seat": "4"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B6",
-      "seat": "39"
-    }
-  },
-  "AST022B12R067": {
-    "name": "Raj Kumari Jain",
-    "phone": "9007960787",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B2",
-      "seat": "5"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B6",
-      "seat": "36"
-    }
-  },
-  "AST023B10R093": {
-    "name": "Rajmati Jain",
-    "phone": "9883121831",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B7",
-      "seat": "2"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B12",
-      "seat": "2"
-    }
-  },
-  "AST024B12R067": {
-    "name": "Sashi Devi Jain",
-    "phone": "9433335165",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B2",
-      "seat": "6"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B6",
-      "seat": "57"
-    }
-  },
-  "AST025B12R068": {
-    "name": "Pushpa Chabra ",
-    "phone": "9830436541",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B2",
-      "seat": "8"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B8",
-      "seat": "59"
-    }
-  },
-  "AST026B12R068": {
-    "name": "Alka Gangwal",
-    "phone": "9007400664",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B2",
-      "seat": "46"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B8",
-      "seat": "61"
-    }
-  },
-  "AST027B03R024": {
-    "name": "Jinendra kr Jain",
-    "phone": "9831644373",
-    "gender": "MALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B6",
-      "seat": "1"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B10",
-      "seat": "1"
-    }
-  },
-  "AST028B03R041": {
-    "name": "Sushila Devi Jain",
-    "phone": "6289068691",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B6",
-      "seat": "8"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B10",
-      "seat": "8"
-    }
-  },
-  "AST029B12R070": {
-    "name": "Sheetal Jain",
-    "phone": "7980547299",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B2",
-      "seat": "48"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B8",
-      "seat": "62"
-    }
-  },
-  "AST030B02R015": {
-    "name": "Usha Patni",
-    "phone": "9831080715",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B6",
-      "seat": "16"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B9",
-      "seat": "39"
-    }
-  },
-  "AST031B11R082": {
-    "name": "Rekha Jain",
-    "phone": "8017748893",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B3",
-      "seat": "57"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B7",
-      "seat": "9"
-    }
-  },
-  "AST032B12R069": {
-    "name": "Vinod Bohra",
-    "phone": "9830048704",
-    "gender": "MALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B2",
-      "seat": "38"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B8",
-      "seat": "64"
-    }
-  },
-  "AST033B12R069": {
-    "name": "Sachi Bohra ",
-    "phone": "9830048704",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B2",
-      "seat": "40"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B8",
-      "seat": "67"
-    }
-  },
-  "AST034B13R053": {
-    "name": "Rajmati Jain",
-    "phone": "9330616538",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B8",
-      "seat": "12"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B3",
-      "seat": "23"
-    }
-  },
-  "AST035B10R093": {
-    "name": "Seema Sogani",
-    "phone": "8961887775",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B7",
-      "seat": "3"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B12",
-      "seat": "3"
-    }
-  },
-  "AST036B04R024": {
-    "name": "Pawan Jain",
-    "phone": "9330904649",
-    "gender": "MALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B1",
-      "seat": "68"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B2",
-      "seat": "1"
-    }
-  },
-  "AST037B15R125": {
-    "name": "Ajay jain",
-    "phone": "9331112286",
-    "gender": "MALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B5",
-      "seat": "12"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B8",
-      "seat": "12"
-    }
-  },
-  "AST038B09R098": {
-    "name": "Padma Jain",
-    "phone": "9830981194",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B7",
-      "seat": "4"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B12",
-      "seat": "4"
-    }
-  },
-  "AST039B09R098": {
-    "name": "Sudha Jain",
-    "phone": "9231313478",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B7",
-      "seat": "9"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B12",
-      "seat": "7"
-    }
-  },
-  "AST040B01R003": {
-    "name": "Sarla Jain",
-    "phone": "7003266656",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B6",
-      "seat": "7"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B9",
-      "seat": "9"
-    }
-  },
-  "AST041B09R098": {
-    "name": "Seema Jain",
-    "phone": "9748461248",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B7",
-      "seat": "5"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B12",
-      "seat": "5"
-    }
-  },
-  "AST042B12R071": {
-    "name": "Sobha Jain",
-    "phone": "9875505897",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B2",
-      "seat": "41"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B7",
-      "seat": "25"
-    }
-  },
-  "AST043B11R083": {
-    "name": "Padma Jain",
-    "phone": "9331045784",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B3",
-      "seat": "35"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B7",
-      "seat": "12"
-    }
-  },
-  "AST044B11R083": {
-    "name": "Suvita Jain",
-    "phone": "9831613364",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B3",
-      "seat": "31"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B7",
-      "seat": "17"
-    }
-  },
-  "AST045B11R083": {
-    "name": "Urmila Jain",
-    "phone": "8910235408",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B3",
-      "seat": "34"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B7",
-      "seat": "20"
-    }
-  },
-  "AST046B11R089": {
-    "name": "Naresh kr Jain",
-    "phone": "9748729873",
-    "gender": "MALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B3",
-      "seat": "33"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B10",
-      "seat": "68"
-    }
-  },
-  "AST047B01R004": {
-    "name": "Anju Lata Jain",
-    "phone": "9339154862",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B6",
-      "seat": "18"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B9",
-      "seat": "6"
-    }
-  },
-  "AST048B12R072": {
-    "name": "Tanish Bohra ",
-    "phone": "8100881017",
-    "gender": "MALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B2",
-      "seat": "42"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B8",
-      "seat": "69"
-    }
-  },
-  "AST049B12R069": {
-    "name": "Rakhi Bohra ",
-    "phone": "9883648704",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B2",
-      "seat": "43"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B8",
-      "seat": "70"
-    }
-  },
-  "AST050B04R017": {
-    "name": "Meera devi jain",
-    "phone": "7044061431",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B1",
-      "seat": "71"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B2",
-      "seat": "4"
-    }
-  },
-  "AST051B01R004": {
-    "name": "Pushpa Jain",
-    "phone": "9903719883",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B6",
-      "seat": "19"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B9",
-      "seat": "8"
-    }
-  },
-  "AST052B07R135": {
-    "name": "Rashmi Ji Jain",
-    "phone": "9163070000",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B4",
-      "seat": "3"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B10",
-      "seat": "61"
-    }
-  },
-  "AST053B07R136": {
-    "name": "Vikash kr Jain",
-    "phone": "9830330000",
-    "gender": "MALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B4",
-      "seat": "5"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B10",
-      "seat": "67"
-    }
-  },
-  "AST054B02R014": {
-    "name": "Pana Devi Jain",
-    "phone": "9163525009",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B6",
-      "seat": "17"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B9",
-      "seat": "10"
-    }
-  },
-  "AST055B12R070": {
-    "name": "SURUCHI JAIN (HM)",
-    "phone": "9432596765",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B2",
-      "seat": "45"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B8",
-      "seat": "72"
-    }
-  },
-  "AST056B01R003": {
-    "name": "Anita Gangwal ",
-    "phone": "7896136156",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B6",
-      "seat": "21"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B9",
-      "seat": "11"
-    }
-  },
-  "AST057B01R001": {
-    "name": "Pramod kr Jain",
-    "phone": "9435082225",
-    "gender": "MALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B6",
-      "seat": "22"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "A2",
-      "seat": "2"
-    }
-  },
-  "AST058B01R003": {
-    "name": "Babita Jain ",
-    "phone": "9435485950",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B6",
-      "seat": "24"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "A2",
-      "seat": "4"
-    }
-  },
-  "AST059B01R002": {
-    "name": "Samta Patni ",
-    "phone": "9831290853",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B6",
-      "seat": "26"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B9",
-      "seat": "13"
-    }
-  },
-  "AST060B01R002": {
-    "name": "Manju Jain",
-    "phone": "9475320011",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B6",
-      "seat": "27"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B9",
-      "seat": "14"
-    }
-  },
-  "AST061B01R002": {
-    "name": "Sangeeta Sethi ",
-    "phone": "9432231577",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B6",
-      "seat": "29"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "A2",
-      "seat": "6"
-    }
-  },
-  "AST062B05R119": {
-    "name": "Birendra Jain",
-    "phone": "9831689032",
-    "gender": "MALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B5",
-      "seat": "17"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B8",
-      "seat": "15"
-    }
-  },
-  "AST063B05R120": {
-    "name": "Amita Jain",
-    "phone": "9903834522",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B5",
-      "seat": "20"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B8",
-      "seat": "17"
-    }
-  },
-  "AST064B05R119": {
-    "name": "Santosh Ji pandya ",
-    "phone": "9830021929",
-    "gender": "MALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B5",
-      "seat": "25"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B8",
-      "seat": "20"
-    }
-  },
-  "AST065B05R120": {
-    "name": "Saroj ji pandya ",
-    "phone": "9830427385",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B5",
-      "seat": "28"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B8",
-      "seat": "60"
-    }
-  },
-  "AST066B15R125": {
-    "name": "Binod Jain ",
-    "phone": "9955310211",
-    "gender": "MALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B5",
-      "seat": "33"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B8",
-      "seat": "57"
-    }
-  },
-  "AST067B15R127": {
-    "name": "Lalita Jain",
-    "phone": "7004315623",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B5",
-      "seat": "36"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B8",
-      "seat": "5"
-    }
-  },
-  "AST068B17R027": {
-    "name": "Anil Jain ",
-    "phone": "9434035761",
-    "gender": "MALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B1",
-      "seat": "49"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B6",
-      "seat": "16"
-    }
-  },
-  "AST069B17R027": {
-    "name": "Indra Jain ",
-    "phone": "8250525599",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B1",
-      "seat": "67"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B6",
-      "seat": "18"
-    }
-  },
-  "AST070B17R027": {
-    "name": "Akansha Jain",
-    "phone": "8777575279",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B1",
-      "seat": "69"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B6",
-      "seat": "19"
-    }
-  },
-  "AST071B12R072": {
-    "name": "Ashok Jain",
-    "phone": "7679449120",
-    "gender": "MALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B2",
-      "seat": "31"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B5",
-      "seat": "35"
-    }
-  },
-  "AST072B12R072": {
-    "name": "Sarita Jain",
-    "phone": "8145815764",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B2",
-      "seat": "32"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B5",
-      "seat": "37"
-    }
-  },
-  "AST073B11R082": {
-    "name": "Mala Devi Jain ",
-    "phone": "9331735646",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B3",
-      "seat": "60"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B11",
-      "seat": "14"
-    }
-  },
-  "AST074B12R073": {
-    "name": "NEELAM GANGWAL (silchar)",
-    "phone": "9435523437",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B2",
-      "seat": "34"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B5",
-      "seat": "38"
-    }
-  },
-  "AST075B06R108": {
-    "name": "Archana Kasliwal ",
-    "phone": "9738313720",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B7",
-      "seat": "6"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B4",
-      "seat": "2"
-    }
-  },
-  "AST084B04R019": {
-    "name": "Ranju Pandya ",
-    "phone": "9435047547",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B1",
-      "seat": "70"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "",
-      "seat": ""
-    }
-  },
-  "AST085B04R022": {
-    "name": "Ajit Pandya ",
-    "phone": "9101136608",
-    "gender": "MALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B1",
-      "seat": "72"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "",
-      "seat": ""
-    }
-  },
-  "AST086B12R071": {
-    "name": "Anita Jain",
-    "phone": "7062849498",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B2",
-      "seat": "33"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B6",
-      "seat": "41"
-    }
-  },
-  "AST087B11R082": {
-    "name": "Laxmi Jain (Prabhat Sethi)",
-    "phone": "9785306581",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B3",
-      "seat": "37"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B11",
-      "seat": "16"
-    }
-  },
-  "AST096B08R077": {
-    "name": "ROSHAN JAIN",
-    "phone": "8200352725",
-    "gender": "MALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B4",
-      "seat": "6"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B11",
-      "seat": "46"
-    }
-  },
-  "AST097B08R077": {
-    "name": "Rajeev Jain",
-    "phone": "7600035134",
-    "gender": "MALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B4",
-      "seat": "8"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B11",
-      "seat": "48"
-    }
-  },
-  "AST098B08R077": {
-    "name": "Rashmi Jain",
-    "phone": "9864480046",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B4",
-      "seat": "16"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B11",
-      "seat": "50"
-    }
-  },
-  "AST101B14R060": {
-    "name": "Amit Jain",
-    "phone": "9435108711",
-    "gender": "MALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B8",
-      "seat": "14"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B1",
-      "seat": "3"
-    }
-  },
-  "AST102B14R060": {
-    "name": "Dipti Jain",
-    "phone": "9864097959",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B8",
-      "seat": "16"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B1",
-      "seat": "5"
-    }
-  },
-  "AST103B14R060": {
-    "name": "Drivyam Jain",
-    "phone": "9435144890",
-    "gender": "MALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B8",
-      "seat": "21"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B1",
-      "seat": "6"
-    }
-  },
-  "AST104B06R110": {
-    "name": "Sandeep jain",
-    "phone": "8809779551",
-    "gender": "MALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B7",
-      "seat": "8"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "",
-      "seat": ""
-    }
-  },
-  "AST105B06R111": {
-    "name": "Rinku Jain ",
-    "phone": "7004959360",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B7",
-      "seat": "10"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "",
-      "seat": ""
-    }
-  },
-  "AST106B02R009": {
-    "name": "Meena Jain",
-    "phone": "9828027239",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B6",
-      "seat": "30"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B9",
-      "seat": "16"
-    }
-  },
-  "AST107B12R073": {
-    "name": "Manju Kala",
-    "phone": "9913791409",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B2",
-      "seat": "35"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B5",
-      "seat": "40"
-    }
-  },
-  "AST108B01R006": {
-    "name": "Surendra Jain",
-    "phone": "9099082117",
-    "gender": "MALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B6",
-      "seat": "32"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B9",
-      "seat": "18"
-    }
-  },
-  "AST109B01R007": {
-    "name": "Babita Jain",
-    "phone": "9986112275",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B6",
-      "seat": "34"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B9",
-      "seat": "19"
-    }
-  },
-  "AST110B11R085": {
-    "name": "Chainsukh Jain ",
-    "phone": "9986112275",
-    "gender": "MALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B3",
-      "seat": "36"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B11",
-      "seat": "26"
-    }
-  },
-  "AST111B11R086": {
-    "name": "Jambu Devi Jain",
-    "phone": "447405342701",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B3",
-      "seat": "38"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B11",
-      "seat": "27"
-    }
-  },
-  "AST112B04R019": {
-    "name": "Mamta Debi Jain",
-    "phone": "447405342701",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B2",
-      "seat": "54"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B2",
-      "seat": "2"
-    }
-  },
-  "AST113B04R024": {
-    "name": "Subhash chand Patni",
-    "phone": "447405342701",
-    "gender": "MALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B2",
-      "seat": "68"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B2",
-      "seat": "7"
-    }
-  },
-  "AST114B04R021": {
-    "name": "Premlata patni",
-    "phone": "8210868314",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B2",
-      "seat": "57"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B2",
-      "seat": "3"
-    }
-  },
-  "AST115B06R114": {
-    "name": "Narendra kr Jain",
-    "phone": "9955797100",
-    "gender": "MALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B7",
-      "seat": "11"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B4",
-      "seat": "1"
-    }
-  },
-  "AST116B06R113": {
-    "name": "Shalu Jain",
-    "phone": "6203335738",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B7",
-      "seat": "13"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B4",
-      "seat": "3"
-    }
-  },
-  "AST118B06R110": {
-    "name": "Deelip Patni",
-    "phone": "9323361710",
-    "gender": "MALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B7",
-      "seat": "12"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B4",
-      "seat": "5"
-    }
-  },
-  "AST119B06R113": {
-    "name": "Sarla Patni ",
-    "phone": "9324515547",
-    "gender": "FEMALE",
-    "onward": {
-      "train": "BKN DURONTO EXP (12259)",
-      "from": "SEALDAH",
-      "to": "NEW DELHI",
-      "date": "25/09/2025",
-      "time": "05:00pm",
-      "coach": "B7",
-      "seat": "14"
-    },
-    "return": {
-      "train": "SDAH DURANTO (12260)",
-      "from": "NEW DELHI",
-      "to": "SEALDAH",
-      "date": "07/10/2025",
-      "time": "07:45pm",
-      "coach": "B4",
-      "seat": "6"
-    }
-  }
-};
-// Booking ID -> QR mapping
-const qrMap = { "AST001B03R038": "ALI363", "AST002B03R038": "ALI364", "AST003B03R038": "ALI365", "AST004B03R037": "ALI368", "AST005B08R078": "ALI369", "AST006B08R078": "ALI370", "AST007B08R078": "ALI371", "AST008B13R051": "BBK341", "AST009B13R053": "BBK342", "AST010B08R080": "BBK343", "AST011B08R081": "BBK344", "AST012B12R066": "BBK345", "AST013B05R114": "BBK346", "AST014B05R111": "BBK347", "AST015B12R066": "BBK348", "AST016B17R026": "BBK349", "AST017B08R080": "BBK350", "AST018B08R081": "BBK351", "AST019B10R094": "BBK352", "AST020B12R070": "BBK353", "AST021B12R067": "BBK354", "AST022B12R067": "BBK355", "AST023B10R093": "BBK356", "AST024B12R067": "BBK357", "AST025B12R068": "BBK358", "AST026B12R068": "BBK359", "AST027B03R024": "BBK360", "AST028B03R041": "BBK361", "AST029B12R070": "BBK362", "AST030B02R015": "BBZ316", "AST031B11R082": "BBZ317", "AST032B12R069": "BBZ318", "AST033B12R069": "BBZ319", "AST034B13R053": "BBZ320", "AST035B10R093": "BBZ321", "AST036B04R024": "BBZ322", "AST037B15R125": "BBZ323", "AST038B09R098": "BBZ324", "AST039B09R098": "BBZ325", "AST040B01R003": "BBZ326", "AST041B09R098": "BBZ327", "AST042B12R071": "BBZ328", "AST043B11R083": "BBZ330", "AST044B11R083": "BBZ331", "AST045B11R083": "BBZ332", "AST046B11R089": "BBZ333", "AST047B01R004": "BBZ334", "AST048B12R072": "BBZ335", "AST049B12R069": "BBZ336", "AST050B04R017": "BBZ339", "AST051B01R004": "BBZ340", "AST052B07R135": "CHOW395", "AST053B07R136": "CHOW396", "AST054B02R014": "CHOW399", "AST055B12R070": "CHOW402", "AST056B01R003": "CHOW403", "AST057B01R001": "CHOW404", "AST058B01R003": "CHOW405", "AST059B01R002": "CHOW406", "AST060B01R002": "CHOW407", "AST061B01R002": "CHOW408", "AST062B05R119": "CHOW409", "AST063B05R120": "CHOW410", "AST064B05R119": "CHOW411", "AST065B05R120": "CHOW412", "AST066B15R125": "IND154", "AST067B15R127": "IND155", "AST068B17R027": "IND156", "AST069B17R027": "IND157", "AST070B17R027": "IND158", "AST071B12R072": "IND159", "AST072B12R072": "IND160", "AST073B11R082": "IND161", "AST074B12R073": "IND162", "AST075B06R108": "IND163", "AST084B04R019": "IND172", "AST085B04R022": "IND173", "AST086B12R071": "IND174", "AST087B11R082": "IND175", "AST096B08R077": "IND185", "AST097B08R077": "IND186", "AST098B08R077": "IND187", "AST101B14R060": "IND190", "AST102B14R060": "IND191", "AST103B14R060": "IND192", "AST104B06R110": "IND193", "AST105B06R111": "IND194", "AST106B02R009": "IND195", "AST107B12R073": "IND196", "AST108B01R006": "KAN372", "AST109B01R007": "KAN373", "AST110B11R085": "KAN374", "AST111B11R086": "KAN375", "AST112B04R019": "KAN376", "AST113B04R024": "KAN377", "AST114B04R021": "KAN378", "AST115B06R114": "KAN379", "AST116B06R113": "KAN380", "AST118B06R110": "KAN384", "AST119B06R113": "KAN385" };
+    <div class="gateway">
+      <div class="form">
+        <input type="text" id="bookingId" placeholder="Enter Booking ID">
+        <button class="button" onclick="generateTicket()">Generate Ticket</button>
+        <button class="button" id="downloadAllBtn" onclick="downloadAllTickets()">Download All 100 Passes</button>
+      </div>
+    </div>
 
-function generateTicket() {
-  const bookingId = document.getElementById('bookingId').value.trim();
-  const p = passengers[qrMap[bookingId]];
-  if(!p){alert("No booking found!");return;}
-  const qrId = qrMap[bookingId];
-  document.getElementById("ticketContainer").innerHTML = renderTicketHTML(bookingId, p, qrId);
-}
+    <div id="ticketContainer"></div>
+  </div>
 
-function renderTicketHTML(bookingId,p,qrId){
-return `<div class="ticket" id="ticket">
-<div class="ticket-header-global">
-<div class="ticket-header-part">SNEH PRAYAS</div>
-<div class="ticket-header-part">RETURN PASS</div>
-<div class="ticket-header-part">ONWARD PASS</div>
-</div>
-<div class="ticket-part small">
-<div class="booking-label">Booking ID</div>
-<div class="booking-id">${bookingId}</div>
-<div class="booking-label">Name</div>
-<div class="passenger-name">${p.name}</div>
-<div class="two-col">
-<div class="col"><div class="info-label">Phone</div><div class="info-value">${p.phone||'—'}</div></div>
-<div class="col"><div class="info-label">Gender</div><div class="info-value">${p.gender||'—'}</div></div>
-</div>
-<div class="qr-wrapper"><img src="${qrId}_QR.png" class="qr-img" alt="QR for ${qrId}"></div>
-</div>
-<div class="ticket-part">
-<div class="info-block"><span class="info-label">Train</span><span class="info-value">${p.return.train}</span></div>
-<div class="route"><div class="station-name">${p.return.from}</div><img src="train-right.png" class="train-img"><div class="station-name">${p.return.to}</div></div>
-<div class="two-col">
-<div class="col"><div class="info-label">Date</div><div class="info-value">${p.return.date}</div></div>
-<div class="col"><div class="info-label">Time</div><div class="info-value">${p.return.time}</div></div>
-</div>
-<div class="two-col">
-<div class="col"><div class="info-label">Coach</div><div class="info-value">${p.return.coach}</div></div>
-<div class="col"><div class="info-label">Seat</div><div class="info-value">${p.return.seat}</div></div>
-</div>
-</div>
-<div class="ticket-part">
-<div class="info-block"><span class="info-label">Train</span><span class="info-value">${p.onward.train}</span></div>
-<div class="route"><div class="station-name">${p.onward.from}</div><img src="train-right.png" class="train-img"><div class="station-name">${p.onward.to}</div></div>
-<div class="two-col">
-<div class="col"><div class="info-label">Date</div><div class="info-value">${p.onward.date}</div></div>
-<div class="col"><div class="info-label">Time</div><div class="info-value">${p.onward.time}</div></div>
-</div>
-<div class="two-col">
-<div class="col"><div class="info-label">Coach</div><div class="info-value">${p.onward.coach}</div></div>
-<div class="col"><div class="info-label">Seat</div><div class="info-value">${p.onward.seat}</div></div>
-</div>
-</div>
-</div>`;
-}
+  <script src="passengers.js"></script>
+  <script>
+    const qrMap = {
+      "AST001B03R038": "ALI363",
+      "AST002B03R038": "ALI364",
+      "AST003B03R038": "ALI365",
+      "AST004B03R037": "ALI368",
+      "AST005B08R078": "ALI369",
+      "AST006B08R078": "ALI370",
+      "AST007B08R078": "ALI371",
+      "AST008B13R051": "BBK341",
+      "AST009B13R053": "BBK342",
+      "AST010B08R080": "BBK343",
+      "AST011B08R081": "BBK344",
+      "AST012B12R066": "BBK345",
+      "AST013B05R114": "BBK346",
+      "AST014B05R111": "BBK347",
+      "AST015B12R066": "BBK348",
+      "AST016B17R026": "BBK349",
+      "AST017B08R080": "BBK350",
+      "AST018B08R081": "BBK351",
+      "AST019B10R094": "BBK352",
+      "AST020B12R070": "BBK353",
+      "AST021B12R067": "BBK354",
+      "AST022B12R067": "BBK355",
+      "AST023B10R093": "BBK356",
+      "AST024B12R067": "BBK357",
+      "AST025B12R068": "BBK358",
+      "AST026B12R068": "BBK359",
+      "AST027B03R024": "BBK360",
+      "AST028B03R041": "BBK361",
+      "AST029B12R070": "BBK362",
+      "AST030B02R015": "BBZ316",
+      "AST031B11R082": "BBZ317",
+      "AST032B12R069": "BBZ318",
+      "AST033B12R069": "BBZ319",
+      "AST034B13R053": "BBZ320",
+      "AST035B10R093": "BBZ321",
+      "AST036B04R024": "BBZ322",
+      "AST037B15R125": "BBZ323",
+      "AST038B09R098": "BBZ324",
+      "AST039B09R098": "BBZ325",
+      "AST040B01R003": "BBZ326",
+      "AST041B09R098": "BBZ327",
+      "AST042B12R071": "BBZ328",
+      "AST043B11R083": "BBZ330",
+      "AST044B11R083": "BBZ331",
+      "AST045B11R083": "BBZ332",
+      "AST046B11R089": "BBZ333",
+      "AST047B01R004": "BBZ334",
+      "AST048B12R072": "BBZ335",
+      "AST049B12R069": "BBZ336",
+      "AST050B04R017": "BBZ339",
+      "AST051B01R004": "BBZ340",
+      "AST052B07R135": "CHOW395",
+      "AST053B07R136": "CHOW396",
+      "AST054B02R014": "CHOW399",
+      "AST055B12R070": "CHOW402",
+      "AST056B01R003": "CHOW403",
+      "AST057B01R001": "CHOW404",
+      "AST058B01R003": "CHOW405",
+      "AST059B01R002": "CHOW406",
+      "AST060B01R002": "CHOW407",
+      "AST061B01R002": "CHOW408",
+      "AST062B05R119": "CHOW409",
+      "AST063B05R120": "CHOW410",
+      "AST064B05R119": "CHOW411",
+      "AST065B05R120": "CHOW412",
+      "AST066B15R125": "IND154",
+      "AST067B15R127": "IND155",
+      "AST068B17R027": "IND156",
+      "AST069B17R027": "IND157",
+      "AST070B17R027": "IND158",
+      "AST071B12R072": "IND159",
+      "AST072B12R072": "IND160",
+      "AST073B11R082": "IND161",
+      "AST074B12R073": "IND162",
+      "AST075B06R108": "IND163",
+      "AST084B04R019": "IND172",
+      "AST085B04R022": "IND173",
+      "AST086B12R071": "IND174",
+      "AST087B11R082": "IND175",
+      "AST096B08R077": "IND185",
+      "AST097B08R077": "IND186",
+      "AST098B08R077": "IND187",
+      "AST101B14R060": "IND190",
+      "AST102B14R060": "IND191",
+      "AST103B14R060": "IND192",
+      "AST104B06R110": "IND193",
+      "AST105B06R111": "IND194",
+      "AST106B02R009": "IND195",
+      "AST107B12R073": "IND196",
+      "AST108B01R006": "KAN372",
+      "AST109B01R007": "KAN373",
+      "AST110B11R085": "KAN374",
+      "AST111B11R086": "KAN375",
+      "AST112B04R019": "KAN376",
+      "AST113B04R024": "KAN377",
+      "AST114B04R021": "KAN378",
+      "AST115B06R114": "KAN379",
+      "AST116B06R113": "KAN380",
+      "AST118B06R110": "KAN384",
+      "AST119B06R113": "KAN385"
+    };
 
-async function downloadAllTickets(){
-const zip=new JSZip();
-const container=document.getElementById('hiddenRenderContainer');
-container.innerHTML='';
-document.getElementById('progressArea').style.display='block';
-let idx=0;
-const total=Object.keys(qrMap).length;
-for(const booking of Object.keys(qrMap)){
-const p=passengers[qrMap[booking]];
-if(!p) continue;
-const html=renderTicketHTML(booking,p,qrMap[booking]);
-const div=document.createElement('div');
-div.innerHTML=html;
-container.appendChild(div);
-const canvas=await html2canvas(div,{scale:3});
-const imgData=canvas.toDataURL("image/png");
-zip.file(`${booking}.png`, imgData.split(',')[1], {base64:true});
-idx++;
-document.getElementById('progressFill').style.width=`${Math.round(idx/total*100)}%`;
-document.getElementById('progressText').innerText=`Generating ${idx}/${total} tickets...`;
-container.removeChild(div);
-}
-zip.generateAsync({type:"blob"}).then(content=>{saveAs(content,"all_boarding_passes.zip");document.getElementById('progressArea').style.display='none';});
-}
-</script>
+    function generateTicket() {
+      const bookingId = document.getElementById('bookingId').value.trim();
+      const p = passengers[bookingId];
+      const qrId = qrMap[bookingId];
+      if(!p){ alert("No booking found!"); return; }
+      if(!qrId){ alert("No QR found!"); return; }
+
+      document.getElementById("ticketContainer").innerHTML = '';
+      const ticketHTML = createTicketHTML(bookingId, p, qrId);
+      document.getElementById("ticketContainer").innerHTML = ticketHTML;
+    }
+
+    function createTicketHTML(bookingId, p, qrId) {
+      return `
+      <div class="ticket" id="ticket">
+        <div class="ticket-header-global">
+          <div class="ticket-header-part">SNEH PRAYAS</div>
+          <div class="ticket-header-part">RETURN PASS</div>
+          <div class="ticket-header-part">ONWARD PASS</div>
+        </div>
+        <div class="ticket-part small">
+          <div class="passenger-info">
+            <div class="booking-label">Booking ID</div>
+            <div class="booking-id">${bookingId}</div>
+            <div class="passenger-name-label">Name</div>
+            <div class="passenger-name">${p.name}</div>
+            <div class="contact-row">
+              <div class="info-block">
+                <div class="info-label">Phone</div>
+                <div class="info-value">${p.phone||'—'}</div>
+              </div>
+              <div class="info-block">
+                <div class="info-label">Gender</div>
+                <div class="info-value">${p.gender||'—'}</div>
+              </div>
+            </div>
+            <div class="qr-container" aria-hidden="true">
+              <img src="${qrId}_QR.png" class="qr-img" alt="QR for ${qrId}">
+            </div>
+          </div>
+        </div>
+        <div class="ticket-part">
+          <div class="info-block"><span class="info-label">Train</span><span class="info-value">${p.return?.train||''}</span></div>
+          <div class="route">
+            <div class="station-name">${p.return?.from||''}</div>
+            <img src="train-right.png" class="train-img" alt="Train">
+            <div class="station-name">${p.return?.to||''}</div>
+          </div>
+          <div class="row">
+            <div class="info-block"><span class="info-label">Date</span><span class="info-value">${p.return?.date||''}</span></div>
+            <div class="info-block"><span class="info-label">Time</span><span class="info-value">${p.return?.time||''}</span></div>
+          </div>
+          <div class="row">
+            <div class="info-block"><span class="info-label">Coach</span><span class="info-value">${p.return?.coach||''}</span></div>
+            <div class="info-block"><span class="info-label">Seat</span><span class="info-value">${p.return?.seat||''}</span></div>
+          </div>
+        </div>
+        <div class="ticket-part">
+          <div class="info-block"><span class="info-label">Train</span><span class="info-value">${p.onward?.train||''}</span></div>
+          <div class="route">
+            <div class="station-name">${p.onward?.from||''}</div>
+            <img src="train-right.png" class="train-img" alt="Train">
+            <div class="station-name">${p.onward?.to||''}</div>
+          </div>
+          <div class="row">
+            <div class="info-block"><span class="info-label">Date</span><span class="info-value">${p.onward?.date||''}</span></div>
+            <div class="info-block"><span class="info-label">Time</span><span class="info-value">${p.onward?.time||''}</span></div>
+          </div>
+          <div class="row">
+            <div class="info-block"><span class="info-label">Coach</span><span class="info-value">${p.onward?.coach||''}</span></div>
+            <div class="info-block"><span class="info-label">Seat</span><span class="info-value">${p.onward?.seat||''}</span></div>
+          </div>
+        </div>
+      </div>`;
+    }
+
+    async function downloadAllTickets() {
+      const zip = new JSZip();
+      for(const bookingId in passengers){
+        const p = passengers[bookingId];
+        const qrId = qrMap[bookingId];
+        const container = document.createElement('div');
+        container.innerHTML = createTicketHTML(bookingId, p, qrId);
+        document.body.appendChild(container);
+        const ticketDiv = container.firstElementChild;
+        const canvas = await html2canvas(ticketDiv, {scale:3});
+        const dataURL = canvas.toDataURL('image/png');
+        const base64 = dataURL.split(',')[1];
+        zip.file(`${bookingId}.png`, base64, {base64:true});
+        document.body.removeChild(container);
+      }
+      zip.generateAsync({type:"blob"}).then(function(content){
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(content);
+        link.download = "All_Boarding_Passes.zip";
+        link.click();
+      });
+    }
+  </script>
 </body>
 </html>
