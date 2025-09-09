@@ -293,55 +293,96 @@ H<!DOCTYPE html>
       });
     }
 
-    async function downloadAllTickets() {
-      const zip = new JSZip();
-      for (const bookingId in passengers) {
-        const p = passengers[bookingId];
-        const qrId = qrMap[bookingId];
-        if (!p || !qrId) continue;
+   async function downloadAllTickets() {
+  const zip = new JSZip();
+  const offscreen = document.createElement('div');
+  offscreen.style.position = 'absolute';
+  offscreen.style.left = '-9999px';
+  offscreen.style.top = '0';
+  document.body.appendChild(offscreen);
 
-        const container = document.createElement('div');
-        container.style.position = 'absolute';
-        container.style.left = '-9999px';
-        container.innerHTML = document.getElementById("ticketContainer").innerHTML
-          .replace('${bookingId}', bookingId)
-          .replace('${p.name}', p.name)
-          .replace('${p.phone}', p.phone || '—')
-          .replace('${p.gender}', p.gender || '—')
-          .replace('${p.return.train}', p.return.train || '')
-          .replace('${p.return.from}', p.return.from || '')
-          .replace('${p.return.to}', p.return.to || '')
-          .replace('${p.return.date}', p.return.date || '')
-          .replace('${p.return.time}', p.return.time || '')
-          .replace('${p.return.coach}', p.return.coach || '')
-          .replace('${p.return.seat}', p.return.seat || '')
-          .replace('${p.onward.train}', p.onward.train || '')
-          .replace('${p.onward.from}', p.onward.from || '')
-          .replace('${p.onward.to}', p.onward.to || '')
-          .replace('${p.onward.date}', p.onward.date || '')
-          .replace('${p.onward.time}', p.onward.time || '')
-          .replace('${p.onward.coach}', p.onward.coach || '')
-          .replace('${p.onward.seat}', p.onward.seat || '')
-          .replace('${qrId}_QR.png', `${qrId}_QR.png`);
+  for (const bookingId in passengers) {
+    const p = passengers[bookingId];
+    const qrId = qrMap[bookingId];
+    if (!p || !qrId) continue;
 
-        document.body.appendChild(container);
-        const ticketDiv = container.firstElementChild;
+    // Create a fresh ticket element
+    const ticketDiv = document.createElement('div');
+    ticketDiv.className = 'ticket';
+    ticketDiv.innerHTML = `
+      <div class="ticket-header-global">
+        <div class="ticket-header-part">SNEH PRAYAS</div>
+        <div class="ticket-header-part">RETURN PASS</div>
+        <div class="ticket-header-part">ONWARD PASS</div>
+      </div>
 
-        const canvas = await html2canvas(ticketDiv, { scale: 3 });
-        const dataURL = canvas.toDataURL("image/png");
-        const base64 = dataURL.split(',')[1];
+      <div class="ticket-part small">
+        <div class="qr-container">
+          <img src="${qrId}_QR.png" class="qr-img" alt="QR for ${qrId}">
+        </div>
+        <div class="passenger-info">
+          <div class="info-block"><span class="info-label">Booking ID</span><span class="info-value">${bookingId}</span></div>
+          <div class="info-block"><span class="info-label">Name</span><span class="info-value">${p.name}</span></div>
+          <div class="info-block"><span class="info-label">Phone</span><span class="info-value">${p.phone}</span></div>
+          <div class="info-block"><span class="info-label">Gender</span><span class="info-value">${p.gender}</span></div>
+        </div>
+      </div>
 
-        zip.file(`${bookingId}.png`, base64, { base64: true });
-        document.body.removeChild(container);
-      }
+      <div class="ticket-part">
+        <div class="info-block"><span class="info-label">Train</span><span class="info-value">${p.return.train}</span></div>
+        <div class="route">
+          <div class="station-name">${p.return.from}</div>
+          <img src="train-right.png" class="train-img" alt="Train">
+          <div class="station-name">${p.return.to}</div>
+        </div>
+        <div class="row">
+          <div class="info-block"><span class="info-label">Date</span><span class="info-value">${p.return.date}</span></div>
+          <div class="info-block"><span class="info-label">Time</span><span class="info-value">${p.return.time}</span></div>
+        </div>
+        <div class="row">
+          <div class="info-block"><span class="info-label">Coach</span><span class="info-value">${p.return.coach}</span></div>
+          <div class="info-block"><span class="info-label">Seat</span><span class="info-value">${p.return.seat}</span></div>
+        </div>
+      </div>
 
-      zip.generateAsync({ type: "blob" }).then(content => {
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(content);
-        link.download = "All_Boarding_Passes.zip";
-        link.click();
-      });
-    }
+      <div class="ticket-part">
+        <div class="info-block"><span class="info-label">Train</span><span class="info-value">${p.onward.train}</span></div>
+        <div class="route">
+          <div class="station-name">${p.onward.from}</div>
+          <img src="train-right.png" class="train-img" alt="Train">
+          <div class="station-name">${p.onward.to}</div>
+        </div>
+        <div class="row">
+          <div class="info-block"><span class="info-label">Date</span><span class="info-value">${p.onward.date}</span></div>
+          <div class="info-block"><span class="info-label">Time</span><span class="info-value">${p.onward.time}</span></div>
+        </div>
+        <div class="row">
+          <div class="info-block"><span class="info-label">Coach</span><span class="info-value">${p.onward.coach}</span></div>
+          <div class="info-block"><span class="info-label">Seat</span><span class="info-value">${p.onward.seat}</span></div>
+        </div>
+      </div>
+    `;
+    
+    offscreen.appendChild(ticketDiv);
+
+    const canvas = await html2canvas(ticketDiv, { scale: 3 });
+    const dataURL = canvas.toDataURL("image/png");
+    const base64 = dataURL.split(',')[1];
+    zip.file(`${bookingId}.png`, base64, { base64: true });
+
+    offscreen.removeChild(ticketDiv);
+  }
+
+  document.body.removeChild(offscreen);
+
+  zip.generateAsync({ type: "blob" }).then(content => {
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(content);
+    link.download = "All_Boarding_Passes.zip";
+    link.click();
+  });
+}
+
   </script>
 </body>
 </html>
