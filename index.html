@@ -164,22 +164,19 @@
     .row { display: flex; justify-content: space-between; margin-top: 6px; gap: 12px; }
     .row .info-block { flex: 1; }
 
-    /* Barcode */
-  .barcode-container {
-  width: 80px;              /* narrow reserved space */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+    /* QR container */
+    .qr-container {
+      width: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-.barcode-img {
-  image-rendering: pixelated;
-  image-rendering: crisp-edges;
-  width: auto;              /* no forced width */
-  max-height: 160px;        /* cap the barcode height */
-  max-width: 80px;          /* prevent overlap into passenger info */
-}
-
+    .qr-img {
+      width: 90px;
+      height: 90px;
+      object-fit: contain;
+    }
 
     .passenger-info {
       display: flex;
@@ -229,8 +226,8 @@
           </div>
 
           <div class="ticket-part small">
-            <div class="barcode-container">
-              <img src="${bookingId}_vertical.png" class="barcode-img" alt="Barcode for ${bookingId}">
+            <div class="qr-container">
+              <img src="${bookingId}_QR.png" class="qr-img" alt="QR for ${bookingId}">
             </div>
             <div class="passenger-info">
               <div class="info-block"><span class="info-label">Booking ID</span><span class="info-value">${bookingId}</span></div>
