@@ -177,14 +177,21 @@ h<!DOCTYPE html>
     }
 
     .passenger-info {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      text-align: left;
-      font-size: 13px;
-    }
-    .passenger-info .info-label { font-size: 11px; color: #444; }
-    .passenger-info .info-value { font-size: 13px; font-weight: 700; }
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: right;   /* ✅ align text to the right */
+  font-size: 13px;
+  margin-left: auto;   /* ✅ push text away from barcode */
+}
+.passenger-info .info-label { 
+  font-size: 11px; 
+  color: #444; 
+}
+.passenger-info .info-value { 
+  font-size: 13px; 
+  font-weight: 700; 
+}
 
     #downloadBtn { display: none; margin: 15px auto; }
   </style>
