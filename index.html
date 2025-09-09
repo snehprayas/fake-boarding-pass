@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sneh Prayas Boarding Pass</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    :root {
+      --pink-100: #ffe6f0;
+      --accent: #d63384;
+      --accent-2: #ff6699;
+      --perforation: #eaa1c3;
+      --text: #000;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--pink-100);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 24px;
+      color: var(--text);
+    }
+
+    .container { width: 100%; max-width: 1100px; margin: 0 auto; }
+
+    h1.main-title {
+      text-align: center;
+      color: var(--accent);
+      font-size: 32px;
+      font-weight: 700;
+      margin: 8px 0 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+    }
+
+    .logo-inline { height: 60px; width: auto; }
+
+    .gateway {
+      background: #ffffff;
+      border-radius: 14px;
+      padding: 18px 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+      text-align: center;
+    }
+
+    .form { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+
+    .gateway input {
+      padding: 10px 12px;
+      border: 2px solid #f7c7da;
+      border-radius: 10px;
+      font-size: 14px;
+      width: 230px;
+      outline: none;
+    }
+
+    .button {
+      padding: 10px 18px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent-2), var(--accent));
+      color: #fff;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+    }
+
+    /* Ticket */
+    .ticket {
+      display: flex;
+      position: relative;
+      width: 80%;
+      max-width: 880px;
+      margin: 22px auto;
+      background: var(--pink-100);
+      border-radius: 18px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+      overflow: hidden;
+    }
+
+    .ticket-header-global {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 42px;
+      background: var(--accent);
+      display: flex;
+      font-weight: 700;
+      font-size: 16px;
+      color: #fff;
+      z-index: 1;
+    }
+
+    .ticket-header-part {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ticket-header-part:first-child { flex: 0 0 25%; }
+    .ticket-header-part:nth-child(2),
+    .ticket-header-part:nth-child(3) { flex: 0 0 37.5%; }
+
+    .ticket-part {
+      flex: 1;
+      padding: 58px 18px 18px;
+      font-size: 14px;
+      position: relative;
+      overflow: hidden;
+      color: black;
+      text-align: center;
+      z-index: 1;
+    }
+
+    .ticket-part.small { 
+      flex: 0.7; 
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      justify-content: flex-start;
+      padding-left: 12px;
+    }
+
+    .ticket-part:not(:last-child) { border-right: 2px dashed var(--perforation); }
+
+    .ticket::after {
+      content: "";
+      position: absolute;
+      left: 0; right: 0; bottom: 0;
+      height: 14px;
+      background: repeating-linear-gradient(-45deg, var(--accent) 0 12px, transparent 12px 24px);
+      z-index: 1;
+    }
+
+    .ticket-part::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 60%;
+      height: 60%;
+      background: url('SNEH_PRAYAS_LOGO.png') no-repeat center;
+      background-size: contain;
+      opacity: 0.08;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .route { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 12px 0; }
+    .station-name { flex: 1; text-align: center; font-size: 22px; font-weight: 700; color: black; }
+    .train-img { width: 70px; height: auto; flex-shrink: 0; }
+
+    .info-block { margin: 6px 0; }
+    .info-label { font-size: 12px; font-weight: 600; color: #555; display: block; }
+    .info-value { font-size: 14px; font-weight: 700; }
+    .row { display: flex; justify-content: space-between; margin-top: 6px; gap: 12px; }
+    .row .info-block { flex: 1; }
+
+    /* Barcode container */
+    .barcode-container {
+      width: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .barcode-img {
+      transform: rotate(-90deg);  /* vertical */
+      width: 120px;   /* adjust size */
+      height: auto;
+    }
+
+    .passenger-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      text-align: left;
+      font-size: 13px;
+    }
+    .passenger-info .info-label { font-size: 11px; color: #444; }
+    .passenger-info .info-value { font-size: 13px; font-weight: 700; }
+
+    #downloadBtn { display: none; margin: 15px auto; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 class="main-title">
+      <img src="SNEH_PRAYAS_LOGO.png" alt="Sneh Prayas Logo" class="logo-inline">
+      SNEH PRAYAS — BOARDING PASS
+    </h1>
+
+    <div class="gateway">
+      <div class="form">
+        <input type="text" id="bookingId" placeholder="Enter Booking ID">
+        <button class="button" onclick="generateTicket()">Generate Ticket</button>
+      </div>
+    </div>
+
+    <div id="ticketContainer"></div>
+    <button id="downloadBtn" class="button" onclick="downloadTicket()">Download Ticket</button>
+  </div>
+  
+  <!-- Load passenger dataset -->
+  <script src="passengers.js"></script>
+
+  <script>
+    function generateTicket() {
+      const bookingId = document.getElementById('bookingId').value.trim();
+      const p = passengers[bookingId];
+
+      if (!p) { 
+        alert("No booking found for this ID!"); 
+        return; 
+      }
+
+      document.getElementById("ticketContainer").innerHTML = `
+        <div class="ticket" id="ticket">
+          <div class="ticket-header-global">
+            <div class="ticket-header-part">SNEH PRAYAS</div>
+            <div class="ticket-header-part">RETURN PASS</div>
+            <div class="ticket-header-part">ONWARD PASS</div>
+          </div>
+
+          <div class="ticket-part small">
+            <div class="barcode-container">
+              <img src="${bookingId}_barcode.png" alt="Barcode" class="barcode-img">
+            </div>
+            <div class="passenger-info">
+              <div class="info-block"><span class="info-label">Booking ID</span><span class="info-value">${bookingId}</span></div>
+              <div class="info-block"><span class="info-label">Name</span><span class="info-value">${p.name}</span></div>
+              <div class="info-block"><span class="info-label">Phone</span><span class="info-value">${p.phone}</span></div>
+              <div class="info-block"><span class="info-label">Gender</span><span class="info-value">${p.gender}</span></div>
+            </div>
+          </div>
+
+          <div class="ticket-part">
+            <div class="info-block"><span class="info-label">Train</span><span class="info-value">${p.return.train}</span></div>
+            <div class="route">
+              <div class="station-name">${p.return.from}</div>
+              <img src="train-right.png" class="train-img" alt="Train">
+              <div class="station-name">${p.return.to}</div>
+            </div>
+            <div class="row">
+              <div class="info-block"><span class="info-label">Date</span><span class="info-value">${p.return.date}</span></div>
+              <div class="info-block"><span class="info-label">Time</span><span class="info-value">${p.return.time}</span></div>
+            </div>
+            <div class="row">
+              <div class="info-block"><span class="info-label">Coach</span><span class="info-value">${p.return.coach}</span></div>
+              <div class="info-block"><span class="info-label">Seat</span><span class="info-value">${p.return.seat}</span></div>
+            </div>
+          </div>
+
+          <div class="ticket-part">
+            <div class="info-block"><span class="info-label">Train</span><span class="info-value">${p.onward.train}</span></div>
+            <div class="route">
+              <div class="station-name">${p.onward.from}</div>
+              <img src="train-right.png" class="train-img" alt="Train">
+              <div class="station-name">${p.onward.to}</div>
+            </div>
+            <div class="row">
+              <div class="info-block"><span class="info-label">Date</span><span class="info-value">${p.onward.date}</span></div>
+              <div class="info-block"><span class="info-label">Time</span><span class="info-value">${p.onward.time}</span></div>
+            </div>
+            <div class="row">
+              <div class="info-block"><span class="info-label">Coach</span><span class="info-value">${p.onward.coach}</span></div>
+              <div class="info-block"><span class="info-label">Seat</span><span class="info-value">${p.onward.seat}</span></div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      document.getElementById("downloadBtn").style.display = "block";
+    }
+
+    function downloadTicket() {
+      const ticket = document.getElementById("ticket");
+      html2canvas(ticket, { scale: 3 }).then(canvas => {
+        const link = document.createElement("a");
+        link.download = "boarding_pass.png";
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+      });
+    }
+  </script>
+</body>
+</html>
