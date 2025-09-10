@@ -113,7 +113,7 @@ h1.main-title {
   z-index: 1;
 }
 
-/* Ticket parts */
+/* Ticket parts with watermark */
 .ticket-part {
   flex: 1;
   padding: 55px 12px 16px;
@@ -122,9 +122,9 @@ h1.main-title {
   text-align: center;
   z-index: 1;
   min-width: 250px;
-
-  /* ✅ watermark */
 }
+
+/* watermark on all parts including QR section */
 .ticket-part::before {
   content: "";
   position: absolute;
@@ -139,10 +139,44 @@ h1.main-title {
   z-index: 0;
 }
 
-/* QR section should not have watermark */
-.ticket-part.small::before {
-  content: none;
+/* QR section styling */
+.ticket-part.small {
+  flex: 0 0 220px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: flex-start;
+  padding: 55px 12px 16px;
+  text-align: left;
+  position: relative;
 }
+
+/* QR white background to make it scannable */
+.ticket-part.small .qr-container {
+  flex-shrink: 0;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff; /* white background behind QR */
+  border-radius: 6px;
+  z-index: 2; /* over watermark */
+  position: relative;
+}
+
+.qr-img { width: 70px; height: 70px; object-fit: contain; z-index: 3; }
+
+.passenger-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  z-index: 2;
+}
+
+.passenger-info .info-label { font-size: 11px; color: #444; }
+.passenger-info .info-value { font-size: 13px; font-weight: 700; }
 
 /* Dashed border between parts */
 .ticket-part:not(:last-child) {
@@ -158,38 +192,6 @@ h1.main-title {
   background: repeating-linear-gradient(-45deg, var(--accent) 0 12px, transparent 12px 24px);
   z-index: 1;
 }
-
-/* QR and passenger info section */
-.ticket-part.small {
-  flex: 0 0 220px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  justify-content: flex-start;
-  padding: 55px 12px 16px;
-  text-align: left;
-}
-
-.qr-container {
-  flex-shrink: 0;
-  width: 80px;
-  height: 80px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.qr-img { width: 70px; height: 70px; object-fit: contain; }
-
-.passenger-info {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  font-size: 12px;
-}
-
-.passenger-info .info-label { font-size: 11px; color: #444; }
-.passenger-info .info-value { font-size: 13px; font-weight: 700; }
 
 /* Route section */
 .route {
