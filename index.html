@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- ✅ Responsive scaling -->
   <title>Sneh Prayas Boarding Pass</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -23,107 +24,105 @@
       align-items: center;
       min-height: 100vh;
       margin: 0;
-      padding: 24px;
+      padding: 16px;
       color: var(--text);
     }
 
     .container {
       width: 100%;
-      max-width: 1100px;
+      max-width: 1000px;
       margin: 0 auto;
     }
 
     h1.main-title {
       text-align: center;
       color: var(--accent);
-      font-size: 32px;
+      font-size: clamp(20px, 5vw, 32px); /* ✅ scales with screen */
       font-weight: 700;
       margin: 8px 0 18px;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 14px;
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
-    .logo-inline { height: 60px; width: auto; }
+    .logo-inline { height: 50px; width: auto; }
 
     .gateway {
       background: #ffffff;
-      border-radius: 14px;
-      padding: 18px 20px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.06);
       text-align: center;
     }
 
-    .form { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+    .form { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
 
     .gateway input {
-      padding: 10px 12px;
+      padding: 10px;
       border: 2px solid #f7c7da;
       border-radius: 10px;
       font-size: 14px;
-      width: 230px;
+      width: min(90%, 250px);
       outline: none;
     }
 
     .button {
-      padding: 10px 18px;
-      border-radius: 12px;
+      padding: 10px 16px;
+      border-radius: 10px;
       background: linear-gradient(135deg, var(--accent-2), var(--accent));
       color: #fff;
       font-weight: 700;
       border: none;
       cursor: pointer;
+      font-size: 14px;
     }
 
     /* Ticket */
     .ticket {
       display: flex;
+      flex-wrap: wrap; /* ✅ allows stacking */
       position: relative;
-      width: 80%;
+      width: 100%;
       max-width: 880px;
-      margin: 22px auto;
+      margin: 20px auto;
       background: var(--pink-100);
-      border-radius: 18px;
-      box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
       overflow: hidden;
     }
 
     .ticket-header-global {
       position: absolute;
       top: 0; left: 0; right: 0;
-      height: 42px;
+      height: 40px;
       background: var(--accent);
       display: flex;
+      justify-content: space-around;
+      align-items: center;
       font-weight: 700;
-      font-size: 16px;
+      font-size: clamp(12px, 2.5vw, 16px);
       color: #fff;
       z-index: 1;
     }
 
-    .ticket-header-part { display: flex; align-items: center; justify-content: center; }
-    .ticket-header-part:first-child { flex: 0 0 25%; }
-    .ticket-header-part:nth-child(2),
-    .ticket-header-part:nth-child(3) { flex: 0 0 37.5%; }
-
     .ticket-part {
       flex: 1;
-      padding: 58px 18px 18px;
-      font-size: 14px;
+      padding: 55px 12px 16px;
+      font-size: clamp(12px, 2.5vw, 14px);
       position: relative;
-      overflow: hidden;
-      color: black;
       text-align: center;
       z-index: 1;
+      min-width: 250px; /* ✅ ensures readability on small screens */
     }
 
     .ticket-part.small { 
-      flex: 0.7; 
+      flex: 0.8; 
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 12px;
       justify-content: flex-start;
-      padding-left: 12px;
     }
 
     .ticket-part:not(:last-child) {
@@ -134,60 +133,42 @@
       content: "";
       position: absolute;
       left: 0; right: 0; bottom: 0;
-      height: 14px;
+      height: 12px;
       background: repeating-linear-gradient(-45deg, var(--accent) 0 12px, transparent 12px 24px);
       z-index: 1;
     }
 
-    .ticket-part::before {
-      content: "";
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 60%;
-      height: 60%;
-      background: url('SNEH_PRAYAS_LOGO.png') no-repeat center;
-      background-size: contain;
-      opacity: 0.08;
-      transform: translate(-50%, -50%);
-      pointer-events: none;
-      z-index: 0;
+    .route { 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      gap: 8px; 
+      margin: 10px 0; 
+      flex-wrap: wrap; /* ✅ wrap on smaller screens */
     }
 
-    .route { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 12px 0; }
-    .station-name { flex: 1; text-align: center; font-size: 22px; font-weight: 700; color: black; }
-    .train-img { width: 70px; height: auto; flex-shrink: 0; }
-
-    .info-block { margin: 6px 0; }
-    .info-label { font-size: 12px; font-weight: 600; color: #555; display: block; }
-    .info-value { font-size: 14px; font-weight: 700; }
-
-    .row { display: flex; justify-content: space-between; margin-top: 6px; gap: 12px; }
-    .row .info-block { flex: 1; }
-
-    /* QR container */
-    .qr-container {
-      width: 100px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .station-name { 
+      flex: 1; 
+      text-align: center; 
+      font-size: clamp(14px, 4vw, 20px); 
+      font-weight: 700; 
     }
 
-    .qr-img {
-      width: 90px;
-      height: 90px;
-      object-fit: contain;
-    }
+    .train-img { width: 50px; max-width: 15vw; height: auto; }
 
-    .passenger-info {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      text-align: left;
-      font-size: 13px;
+    .info-block { margin: 4px 0; }
+    .info-label { font-size: clamp(10px, 2vw, 12px); font-weight: 600; color: #555; display: block; }
+    .info-value { font-size: clamp(12px, 3vw, 14px); font-weight: 700; }
+
+    .row { display: flex; justify-content: space-between; margin-top: 6px; gap: 10px; flex-wrap: wrap; }
+    .row .info-block { flex: 1; min-width: 100px; }
+
+    /* Responsive fix for small screens */
+    @media (max-width: 600px) {
+      .ticket { flex-direction: column; }
+      .ticket-part { border-right: none; border-bottom: 2px dashed var(--perforation); }
+      .ticket-part.small { flex-direction: column; align-items: flex-start; }
     }
-    .passenger-info .info-label { font-size: 11px; color: #444; }
-    .passenger-info .info-value { font-size: 13px; font-weight: 700; }
 
     #downloadBtn, #downloadAllBtn { display: none; margin: 15px auto; }
   </style>
@@ -293,96 +274,55 @@
       });
     }
 
- async function downloadAllTickets() {
-  const zip = new JSZip();
+    async function downloadAllTickets() {
+      const zip = new JSZip();
+      for (const bookingId in passengers) {
+        const p = passengers[bookingId];
+        const qrId = qrMap[bookingId];
+        if (!p || !qrId) continue;
 
-  for (const bookingId in passengers) {
-    const p = passengers[bookingId];
-    const qrId = qrMap[bookingId];
-    if (!p || !qrId) continue;
+        const container = document.createElement('div');
+        container.style.position = 'absolute';
+        container.style.left = '-9999px';
+        container.innerHTML = document.getElementById("ticketContainer").innerHTML
+          .replace('${bookingId}', bookingId)
+          .replace('${p.name}', p.name)
+          .replace('${p.phone}', p.phone || '—')
+          .replace('${p.gender}', p.gender || '—')
+          .replace('${p.return.train}', p.return.train || '')
+          .replace('${p.return.from}', p.return.from || '')
+          .replace('${p.return.to}', p.return.to || '')
+          .replace('${p.return.date}', p.return.date || '')
+          .replace('${p.return.time}', p.return.time || '')
+          .replace('${p.return.coach}', p.return.coach || '')
+          .replace('${p.return.seat}', p.return.seat || '')
+          .replace('${p.onward.train}', p.onward.train || '')
+          .replace('${p.onward.from}', p.onward.from || '')
+          .replace('${p.onward.to}', p.onward.to || '')
+          .replace('${p.onward.date}', p.onward.date || '')
+          .replace('${p.onward.time}', p.onward.time || '')
+          .replace('${p.onward.coach}', p.onward.coach || '')
+          .replace('${p.onward.seat}', p.onward.seat || '')
+          .replace('${qrId}_QR.png', `${qrId}_QR.png`);
 
-    // Clone the visible ticket element template
-    const template = document.createElement('div');
-    template.innerHTML = `
-      <div class="ticket">
-        <div class="ticket-header-global">
-          <div class="ticket-header-part">SNEH PRAYAS</div>
-          <div class="ticket-header-part">RETURN PASS</div>
-          <div class="ticket-header-part">ONWARD PASS</div>
-        </div>
+        document.body.appendChild(container);
+        const ticketDiv = container.firstElementChild;
 
-        <div class="ticket-part small">
-          <div class="qr-container">
-            <img src="${qrId}_QR.png" class="qr-img" alt="QR for ${qrId}">
-          </div>
-          <div class="passenger-info">
-            <div class="info-block"><span class="info-label">Booking ID</span><span class="info-value">${bookingId}</span></div>
-            <div class="info-block"><span class="info-label">Name</span><span class="info-value">${p.name}</span></div>
-            <div class="info-block"><span class="info-label">Phone</span><span class="info-value">${p.phone}</span></div>
-            <div class="info-block"><span class="info-label">Gender</span><span class="info-value">${p.gender}</span></div>
-          </div>
-        </div>
+        const canvas = await html2canvas(ticketDiv, { scale: 3 });
+        const dataURL = canvas.toDataURL("image/png");
+        const base64 = dataURL.split(',')[1];
 
-        <div class="ticket-part">
-          <div class="info-block"><span class="info-label">Train</span><span class="info-value">${p.return.train}</span></div>
-          <div class="route">
-            <div class="station-name">${p.return.from}</div>
-            <img src="train-right.png" class="train-img" alt="Train">
-            <div class="station-name">${p.return.to}</div>
-          </div>
-          <div class="row">
-            <div class="info-block"><span class="info-label">Date</span><span class="info-value">${p.return.date}</span></div>
-            <div class="info-block"><span class="info-label">Time</span><span class="info-value">${p.return.time}</span></div>
-          </div>
-          <div class="row">
-            <div class="info-block"><span class="info-label">Coach</span><span class="info-value">${p.return.coach}</span></div>
-            <div class="info-block"><span class="info-label">Seat</span><span class="info-value">${p.return.seat}</span></div>
-          </div>
-        </div>
+        zip.file(`${bookingId}.png`, base64, { base64: true });
+        document.body.removeChild(container);
+      }
 
-        <div class="ticket-part">
-          <div class="info-block"><span class="info-label">Train</span><span class="info-value">${p.onward.train}</span></div>
-          <div class="route">
-            <div class="station-name">${p.onward.from}</div>
-            <img src="train-right.png" class="train-img" alt="Train">
-            <div class="station-name">${p.onward.to}</div>
-          </div>
-          <div class="row">
-            <div class="info-block"><span class="info-label">Date</span><span class="info-value">${p.onward.date}</span></div>
-            <div class="info-block"><span class="info-label">Time</span><span class="info-value">${p.onward.time}</span></div>
-          </div>
-          <div class="row">
-            <div class="info-block"><span class="info-label">Coach</span><span class="info-value">${p.onward.coach}</span></div>
-            <div class="info-block"><span class="info-label">Seat</span><span class="info-value">${p.onward.seat}</span></div>
-          </div>
-        </div>
-      </div>
-    `;
-
-    // Add to DOM (hidden, but CSS fully applies)
-    const ticketDiv = template.firstElementChild;
-    ticketDiv.style.position = "absolute";
-    ticketDiv.style.left = "-9999px";
-    document.body.appendChild(ticketDiv);
-
-    // Render to canvas
-    const canvas = await html2canvas(ticketDiv, { scale: 3 });
-    const dataURL = canvas.toDataURL("image/png");
-    zip.file(`${bookingId}.png`, dataURL.split(',')[1], { base64: true });
-
-    // Remove from DOM
-    document.body.removeChild(ticketDiv);
-  }
-
-  // Generate ZIP
-  const content = await zip.generateAsync({ type: "blob" });
-  const link = document.createElement("a");
-  link.href = URL.createObjectURL(content);
-  link.download = "All_Boarding_Passes.zip";
-  link.click();
-}
-}
-
+      zip.generateAsync({ type: "blob" }).then(content => {
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(content);
+        link.download = "All_Boarding_Passes.zip";
+        link.click();
+      });
+    }
   </script>
 </body>
 </html>
