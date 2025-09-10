@@ -154,19 +154,23 @@ h1.main-title {
 /* QR white background to make it scannable */
 .ticket-part.small .qr-container {
   flex-shrink: 0;
-  width: 80px;
-  height: 80px;
+  width: 74px;  /* slightly bigger than QR */
+  height: 74px; /* slightly bigger than QR */
   display: flex;
   align-items: center;
   justify-content: center;
   background: #fff; /* white background behind QR */
-  border-radius: 6px;
+  border-radius: 4px;
   z-index: 2; /* over watermark */
   position: relative;
 }
 
-.qr-img { width: 70px; height: 70px; object-fit: contain; z-index: 3; }
-
+.qr-img { 
+  width: 70px; 
+  height: 70px; 
+  object-fit: contain; 
+  z-index: 3; 
+}
 .passenger-info {
   display: flex;
   flex-direction: column;
